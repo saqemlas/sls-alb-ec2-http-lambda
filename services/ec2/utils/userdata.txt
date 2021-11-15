@@ -1,0 +1,28 @@
+#!/bin/bash
+
+BUCKET_NAME="hybrid-dev-ec2-bucket"
+
+# Start Userdata Script
+echo "user data script executed..."
+
+# Install Node / NPM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm install node
+
+# Install Yarn
+npm install --global yarn
+
+# Download zip from S3
+echo "retrieving from bucket $BUCKET_NAME..."
+aws s3 cp "s3://$BUCKET_NAME/code.zip" .
+
+# Unzip code
+unzip code.zip
+
+# Install dependencies
+yarn install
+
+# Start Server
+PORT=3000 yarn run start:prod

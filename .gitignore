@@ -1,0 +1,8 @@
+node_modules
+.serverless
+.esbuild
+
+**.zip
+user-data.json
+user-data.txt
+config

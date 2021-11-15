@@ -1,0 +1,82 @@
+Resources:
+
+  vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ${self:custom.baseName}-vpc
+      CidrBlock: 20.0.0.0/16
+  
+  subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 20.0.1.0/24
+      MapPublicIpOnLaunch: true
+      VpcId:
+        Ref: vpc
+  
+  subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 20.0.2.0/24
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref vpc
+  
+  routeTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref vpc
+
+  subnet1Route1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTable1
+      SubnetId: !Ref subnet1
+  
+  subnet2Route2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref routeTable2
+      SubnetId: !Ref subnet2
+  
+  apgwRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      GatewayId: !Ref ipgw
+      RouteTableId: !Ref routeTable1
+      DestinationCidrBlock: 0.0.0.0/0
+  
+  routeTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref vpc
+  
+  ipgwRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      GatewayId: !Ref ipgw
+      RouteTableId: !Ref routeTable2
+      DestinationCidrBlock: 0.0.0.0/0
+  
+  ipgw:
+    Type: AWS::EC2::InternetGateway
+  
+  ipgwAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref vpc
+      InternetGatewayId: !Ref ipgw
+  
+  securityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow all
+      SecurityGroupIngress:
+        - FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      VpcId: !Ref vpc

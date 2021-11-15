@@ -1,0 +1,56 @@
+Resources:
+
+  ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-09d4a659cdd8677be # see for latest image ids - https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#LaunchInstanceWizard:
+      UserData: ${file(services/ec2/utils/user-data.json):code}
+      InstanceType: t2.micro
+      IamInstanceProfile: ${self:custom.baseName}-ec2-profile
+      SubnetId: !Ref subnet1
+      SecurityGroupIds:
+        - !Ref securityGroup
+
+  ec2CodeBucketAccessPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: ${self:custom.baseName}-ec2-bucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Principal:
+              Service: 
+                - ecs.amazonaws.com
+            Resource: 
+              - arn:aws:s3:::${self:custom.ec2CodeBucket}/* 
+
+  ec2IamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ${self:custom.baseName}-ec2-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ${self:custom.baseName}-ec2-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - arn:aws:s3:::${self:custom.ec2CodeBucket}/* 
+    
+
+  ec2IamRoleProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: ${self:custom.baseName}-ec2-profile
+      Roles:
+        - !Ref ec2IamRole

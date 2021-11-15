@@ -1,0 +1,30 @@
+{
+  "name": "@aws-template/aws-alb-ec2-http-lambda",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "clean": "rimraf node_modules .serverless services/ec2/node_modules services/ec2/utils/user-data.json services/ec2/code.zip && yarn cache clean",
+    "postinstall": "cd services/ec2 && yarn install",
+    "start:ec2:dev": "cd services/ec2 && yarn run start:dev",
+    "start:ec2:prod": "cd services/ec2 && yarn run start:prod",
+    "invoke:ec2": "cd services/ec2 && yarn run invoke:local",
+    "invoke:lambda": "serverless invoke local --function Lambda --path services/lambda/event.json",
+    "encode:ec2:userdata": "cd services/ec2/utils && echo {\\\"code\\\":\\\"$(base64 userdata.txt)\\\"} > user-data.json",
+    "upload:ec2:code": "cd services/ec2/utils && bash upload-ec2-code.sh",
+    "deploy": "yarn run encode:ec2:userdata && serverless deploy",
+    "remove": "serverless remove",
+    "remove:ec2:bucket": "f() { AWS_PAGER='' && aws s3api delete-bucket --bucket $1; }; f"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.84",
+    "inquirer": "8.2.0",
+    "rimraf": "3.0.2",
+    "serverless": "2.65.0",
+    "serverless-esbuild": "1.20.0",
+    "serverless-s3-cleaner": "1.0.1",
+    "serverless-iam-roles-per-function": "3.2.0",
+    "serverless-scriptable-plugin": "1.2.2",
+    "uuid": "8.3.2"
+  }
+}
