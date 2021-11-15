@@ -1,5 +1,12 @@
 # Hybrid Load Balancing Lambda and EC2
 
+## Architecture
+
+<p align="center">
+  <img src="/architecture-diagram.drawio.svg" />
+</p>
+
+
 ## Info 
 
 This handles deployment for an application load balance, ec2 instance, lambda function, internet gateway, vpc with associated services (subnets, security group, route table, etc), s3 bucket, and appropriate iam roles.
@@ -32,12 +39,6 @@ For more information...
 - [AWS Documentation: Using credentials for Amazon EC2 instance metadata](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-metadata.html)
 - [AWS Documentation: Using an IAM role to grant permissions to applications running on Amazon EC2 instances ](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html)
 
-
-## Architecture
-
-<p align="center">
-  <img src="/architecture-diagram.drawio.svg" />
-</p>
 
 ## Usage 
 
